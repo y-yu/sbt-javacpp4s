@@ -5,18 +5,21 @@ import UpdateReadme.updateReadme
 
 lazy val root = (project in file("."))
   .settings(
+    sbtPlugin := true,
     scalaVersion := "2.12.10",
+    scalacOptions ++= Seq(
+      "-deprecation",
+      "-encoding", "UTF-8",
+      "-Xlint",
+      "-language:implicitConversions", "-language:higherKinds", "-language:existentials",
+      "-unchecked"
+    ),
     organization := "com.github.y-yu",
     name := "sbt-javacpp4s",
     description := "A sbt plugin using JavaCPP for Scala",
     homepage := Some(url("https://github.com/y-yu")),
     licenses := Seq("MIT" -> url(s"https://github.com/y-yu/sbt-javacpp4s/blob/master/LICENSE")),
-    libraryDependencies ++= Seq(
-      "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2",
-      "ch.qos.logback" % "logback-classic" % "1.2.3",
-      "org.bytedeco" % "javacpp" % "1.5.1",
-      "org.scalatest" %% "scalatest" % "3.0.8" % "test"
-    ),
+    libraryDependencies += "org.bytedeco" % "javacpp" % "1.5.1",
     scriptedLaunchOpts := { scriptedLaunchOpts.value ++
       Seq("-Xmx1024M", "-Dplugin.version=" + version.value)
     },
