@@ -8,7 +8,7 @@ sbt-javacpp4s: A sbt plugin using JavaCPP for Scala
 1. `./project/plugins.sbt`
 
     ```
-    addSbtPlugin("com.github.y-yu" % "sbt-javacpp4s" % "0.1.0")
+    addSbtPlugin(com.github.y-yu" % "sbt-javacpp4s" % "0.1.0")
     ```
     - if you want to use a SNAPSHOT version, you write following.
         ```
