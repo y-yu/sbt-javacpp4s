@@ -2,6 +2,9 @@ sbt-javacpp4s: A sbt plugin using JavaCPP for Scala
 ============================
 
 [![Build Status](https://travis-ci.org/y-yu/sbt-javacpp4s.svg?branch=master)](https://travis-ci.org/y-yu/sbt-javacpp4s)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.y-yu/sbt-javacpp4s/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.y-yu/sbt-javacpp4s)
+
+A sbt plugin to to use [JavaCPP](https://github.com/bytedeco/javacpp) from Scala.
 
 ## How to Use
 
