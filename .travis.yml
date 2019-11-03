@@ -1,0 +1,21 @@
+language: scala
+
+sudo: false
+
+cache:
+  directories:
+    - $HOME/.ivy2/cache
+    - $HOME/.sbt/boot
+    - $HOME/.sbt/launchers
+
+scala:
+  - 2.12.10
+
+script:
+  - sbt scripted
+  - cd example && sbt run
+
+before_cache:
+  - find $HOME/.sbt -name "*.lock" | xargs rm
+  - find $HOME/.ivy2 -name "ivydata-*.properties" | xargs rm
+

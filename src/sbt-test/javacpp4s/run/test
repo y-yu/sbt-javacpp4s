@@ -1,0 +1,12 @@
+> generateJNILibrary
+
+> checkFileInlibjni "libReturnInput\.(dylib|so)"
+> checkFileInlibjni "libjniReturnInput\.(dylib|so)"
+
+> clean
+
+> run
+
+> clean
+
+> test
