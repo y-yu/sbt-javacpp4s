@@ -4,34 +4,39 @@ import sbt.Keys._
 import sbt._
 import scala.sys.process.ProcessLogger
 import scala.sys.process._
+import DynamicLibraryMeta.createDynamicLibraryMetaTask
 
 /**
   * Generate JNI dynamic link libraries.
   */
 object SbtJavaCPP4S extends AutoPlugin {
   object autoImport {
-    lazy val gppPath = settingKey[String](
+    lazy val gppCompilerPath = settingKey[String](
       "g++ runtime path. (default: clang++)"
     )
 
-    lazy val cppSourcePath = settingKey[File](
-      "A directory in which C++ source code files are."
+    lazy val makeLibraryCommands = settingKey[Seq[String]](
+      "Commands to build the library used by Java."
     )
 
     lazy val includePath = settingKey[File](
-      "A directory in which C++ header files are."
+      "The directory in which C++ header files are."
     )
 
     lazy val libraryName = settingKey[String](
-      "The library name created by C++ source code."
+      "The library name without its extension created by C++ source code."
     )
 
     lazy val libraryDestinationPath = settingKey[File](
-      "An output directory for built dynamic libraries."
+      "The output directory for built dynamic libraries."
     )
 
     lazy val nativeJavaClassPath = settingKey[String](
       "Native implemented Java class path."
+    )
+
+    lazy val currentLibraryMeta = settingKey[DynamicLibraryMeta](
+      "Extension and g++ option of the environment."
     )
 
     lazy val generateJNILibrary =
@@ -46,11 +51,17 @@ object SbtJavaCPP4S extends AutoPlugin {
   override val projectSettings: Seq[Setting[_]] = {
     import autoImport._
 
+    val libraryMeta = if (System.getProperty("os.name").contains("Mac"))
+      DynamicLibraryMeta.Mac
+    else
+      DynamicLibraryMeta.Linux
+
     Seq(
-      gppPath := "clang++",
+      gppCompilerPath := "clang++",
       libraryDestinationPath := (target in Compile).value / "libjni",
       generateJNILibrary in Compile :=
         generateJNILibraryTask.dependsOn(compile in Compile).value,
+      currentLibraryMeta := libraryMeta,
       fork := true,
       fork in Test := true,
       javaOptions ++= Seq(
@@ -58,52 +69,30 @@ object SbtJavaCPP4S extends AutoPlugin {
         s"-Dplatform.linkpath=${libraryDestinationPath.value.toString}"
       ),
       libraryDependencies += "org.bytedeco" % "javacpp" % "1.5.1",
+      sourceGenerators in Compile += createDynamicLibraryMetaTask.taskValue,
       run := (run in Runtime).dependsOn(generateJNILibrary in Compile).evaluated,
       test := (test in Test).dependsOn(generateJNILibrary in Compile).value
     )
   }
 
-  sealed abstract class DynamicLibraryMeta(
-    val option: String,
-    val extension: String
-  )
-
-  object DynamicLibraryMeta {
-    case object Mac extends DynamicLibraryMeta("-dynamiclib", "dylib")
-    case object Linux extends DynamicLibraryMeta("-shared", "so")
-  }
-
   private def generateJNILibraryTask: Def.Initialize[Task[Unit]] = Def.task {
     val log = streams.value.log
-    val includePath = (autoImport.includePath in Compile).value
-    val cppSourcePath = (autoImport.cppSourcePath in Compile).value
-    val destinationPath = (autoImport.libraryDestinationPath in Compile).value
-    val libraryName = (autoImport.libraryName in Compile).value
-    val nativeJavaClassPath = (autoImport.nativeJavaClassPath in Compile).value
-    val gppPath = autoImport.gppPath.value
+    val gppCompilerPath = (autoImport.gppCompilerPath).value
+    val includePath = (autoImport.includePath).value
+    val destinationPath = (autoImport.libraryDestinationPath).value
+    val nativeJavaClassPath = (autoImport.nativeJavaClassPath).value
+    val makeLibraryCommands = (autoImport.makeLibraryCommands).value
+
     val processLogger = ProcessLogger(
       log.info(_),
       log.error(_)
     )
-    val currentLibraryMeta: DynamicLibraryMeta =
-      if (System.getProperty("os.name").contains("Mac"))
-        DynamicLibraryMeta.Mac
-      else
-        DynamicLibraryMeta.Linux
-
-    val makeLibCommand = Seq(
-      gppPath,
-      "-I", includePath,
-      currentLibraryMeta.option,
-      "-o", destinationPath / s"$libraryName.${currentLibraryMeta.extension}",
-      cppSourcePath.toString
-    ).mkString(" ")
 
     try {
       IO.createDirectory(destinationPath)
 
       // Make a base dynamic link library.
-      if (makeLibCommand ! processLogger == 0) {
+      if (makeLibraryCommands.mkString(" ") ! processLogger == 0) {
         log.info("Success!")
       } else {
         sys.error("Fail to make the library!")
@@ -120,7 +109,7 @@ object SbtJavaCPP4S extends AutoPlugin {
         classpath = javaCPPClassPath,
         options = Seq(
           s"-cp", (fullClasspath in Compile).value.files.mkString(":"),
-          s"-Dplatform.compiler=$gppPath",
+          s"-Dplatform.compiler=$gppCompilerPath",
           s"-Dplatform.includepath=${includePath.toString}",
           s"-Dplatform.linkpath=${destinationPath.toString}",
           "-d", destinationPath.toString,
