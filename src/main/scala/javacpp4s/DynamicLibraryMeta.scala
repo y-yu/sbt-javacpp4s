@@ -21,6 +21,7 @@ object DynamicLibraryMeta {
         case Mac => "Mac"
         case Linux => "Linux"
       }
+      val libraryNameString = libraryName.value
 
       val outputBody =
         s"""/**
@@ -40,6 +41,8 @@ object DynamicLibraryMeta {
            |  case object Linux extends DynamicLibraryMeta("-shared", "so")
            |
            |  val currentLibraryMeta: DynamicLibraryMeta = "$nameOfSetting"
+           |
+           |  val libraryName: String = "$libraryNameString"
            |}
            |""".stripMargin
 
