@@ -40,7 +40,7 @@ object DynamicLibraryMeta {
            |  case object Mac extends DynamicLibraryMeta("-dynamiclib", "dylib")
            |  case object Linux extends DynamicLibraryMeta("-shared", "so")
            |
-           |  val currentLibraryMeta: DynamicLibraryMeta = "$nameOfSetting"
+           |  val currentLibraryMeta: DynamicLibraryMeta = $nameOfSetting
            |
            |  val libraryName: String = "$libraryNameString"
            |}

@@ -69,7 +69,7 @@ object SbtJavaCPP4S extends AutoPlugin {
         s"-Dplatform.linkpath=${libraryDestinationPath.value.toString}"
       ),
       libraryDependencies += "org.bytedeco" % "javacpp" % "1.5.1",
-      compile := (compile in Compile).dependsOn(createDynamicLibraryMetaTask).value,
+      sourceGenerators in Compile += createDynamicLibraryMetaTask.taskValue,
       run := (run in Runtime).dependsOn(generateJNILibrary in Compile).evaluated,
       test := (test in Test).dependsOn(generateJNILibrary in Compile).value
     )
