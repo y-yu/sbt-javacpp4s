@@ -58,6 +58,7 @@ lazy val publishSettings = Seq(
     runClean,
     releaseStepCommandAndRemaining("^ scripted"),
     setReleaseVersion,
+    updateReadme,
     commitReleaseVersion,
     tagRelease,
     releaseStepCommandAndRemaining("^ publishSigned"),
