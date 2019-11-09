@@ -15,7 +15,7 @@ A sbt plugin to to use [JavaCPP](https://github.com/bytedeco/javacpp) from Scala
     ```
     - if you want to use a SNAPSHOT version, you write following.
         ```
-        addSbtPlugin(com.github.y-yu" % "sbt-javacpp4s" % "0.1.2-SNAPSHOT")
+        addSbtPlugin(com.github.y-yu" % "sbt-javacpp4s" % "0.1.4-SNAPSHOT")
         ```
     
 2. `build.sbt`
