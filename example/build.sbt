@@ -1,7 +1,5 @@
 import javacpp4s.SbtJavaCPP4S._
 
-scalaVersion := "2.12.10"
-
 includePath := (baseDirectory in Compile).value / "cpp_src"
 
 libraryName := "libHelloWorld"
