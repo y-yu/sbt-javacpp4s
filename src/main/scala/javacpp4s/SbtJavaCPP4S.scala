@@ -2,7 +2,6 @@ package javacpp4s
 
 import sbt.Keys._
 import sbt._
-import scala.sys.process.ProcessLogger
 import scala.sys.process._
 import DynamicLibraryMeta.createDynamicLibraryMetaTask
 
