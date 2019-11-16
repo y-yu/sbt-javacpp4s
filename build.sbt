@@ -6,7 +6,6 @@ import UpdateReadme.updateReadme
 lazy val root = (project in file("."))
   .settings(
     sbtPlugin := true,
-    scalaVersion := "2.12.10",
     scalacOptions ++= Seq(
       "-deprecation",
       "-encoding", "UTF-8",
